@@ -64,3 +64,13 @@ create table pickups (
   delivery_time timestamp with time zone,
   status text check (status in ('ASSIGNED', 'PICKED', 'DELIVERED')) default 'ASSIGNED'
 );
+
+-- Notifications Table
+create table notifications (
+  notification_id uuid default uuid_generate_v4() primary key,
+  user_id uuid references users(user_id) on delete cascade not null,
+  message text not null,
+  type text,
+  is_read boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
