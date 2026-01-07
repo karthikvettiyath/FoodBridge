@@ -41,4 +41,25 @@ router.put('/:id/read', auth, async (req, res) => {
     }
 });
 
+const db = require('../config/db');
+
+// @route   DELETE api/notifications/:id
+// @desc    Delete a notification
+// @access  Private
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const { rows, rowCount } = await db.query(
+            'DELETE FROM notifications WHERE notification_id = $1 AND user_id = $2 RETURNING *',
+            [req.params.id, req.user.id]
+        );
+
+        if (rowCount === 0) return res.status(404).json({ msg: 'Notification not found' });
+
+        res.json({ msg: 'Notification deleted' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
